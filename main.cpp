@@ -105,24 +105,28 @@ void init_graph(QVector <Adges> &vec_adges){
     }
 }
 
-void show_path(QList <QString> list_path){
+void show_path(QVector <QList <QString>> list_path){
     for(int i = 0; i < list_path.size(); i++){
-        qDebug() << "D" << i << ": " << (QString)list_path[i];
+        for (int j = 0; j < list_path[i].size(); j++){
+            std::cout << list_path[i][j].toStdString() << "\t";
+        }
+        std::cout << std::endl;
     }
-    qDebug() << Qt::endl;
 }
 
 int main()
 {
     QVector <Adges> vec_adges;
     QVector <int> vec_d;
-    QList <QString> list_path;
+    QVector <QList <QString>> list_path;
     QList <QString> list_adges;
     init_graph(vec_adges);
     int n = max_index_vertex(vec_adges) + 1;
     vec_d.resize(n * 2, -1);
     list_path.resize(n);
-    list_path[0] = "0";
+    for(int i = 0; i < n; i++){
+        list_path[i] << "D" + QString::number(i);
+    }
     vec_d[0] = vec_d[n] = 0;
     int count = 1, adge_c, index;
     QVector <int> vec_sum;
@@ -131,7 +135,7 @@ int main()
         for(int i = 1; i < n; i++){
             for(int j = 0; j < n; j++){
                 adge_c = edge_search(i, j, vec_adges);
-                    list_adges << QString::number(i) + QString::number(j);
+                    list_adges << QString::number(i) + "." + QString::number(j);
                 vec_sum << sum(vec_d[j + n], adge_c);
             }
 //            qDebug() << vec_sum;
@@ -139,7 +143,7 @@ int main()
             vec_d[i] = min_search(vec_sum, index, found);
             if(found){
                 if(list_adges[index].left(1) != list_adges[index].right(1)){
-                    list_path[i] += "D" + QString::number(index) + "-" + list_adges[index] + " ";
+                    list_path[i] << "D" + QString::number(index) + "-" + list_adges[index];
                 }
             }
             if(vec_d[i] == vec_d[i + n]){
